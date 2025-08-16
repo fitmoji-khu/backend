@@ -10,7 +10,7 @@ export interface User {
 
 export interface UserInfo {
     id: number;
-    userId: number;
+    user_id: number;
     personal_color: string;
     style: string;
     height: number;
