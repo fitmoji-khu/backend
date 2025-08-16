@@ -6,7 +6,7 @@ import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import { swaggerConfig, swaggerUiConfig } from './config/swagger';
 import fastifyMultipart from '@fastify/multipart';
-import routes from './routes/root.module';
+import routes from './routes/root.module'
 
 const fastify = Fastify({
     logger: true,
@@ -29,7 +29,7 @@ fastify.register(fastifyMultipart);
 
 fastify.register(fastifySwagger, swaggerConfig);
 fastify.register(fastifySwaggerUi, swaggerUiConfig);
-fastify.register(routes);
+routes.register(fastify);
 
 const start = async () => {
     try {

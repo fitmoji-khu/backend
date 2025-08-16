@@ -1,6 +1,5 @@
-import type { FastifyPluginAsync } from 'fastify';
+import Module from '../lib/module';
 
-const routes: FastifyPluginAsync = async (fastify) => {
-};
+const routes = new Module('')
 
 export default routes;
