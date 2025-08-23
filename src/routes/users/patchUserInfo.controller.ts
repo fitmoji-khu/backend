@@ -1,45 +1,40 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { User } from '../../lib/type';
+import { UserInfo } from '../../lib/type';
 import { prisma } from "../../lib/prisma";
 import { BadRequest, Unauthorized } from '../../lib/httpError';
 
 export default async function (request: FastifyRequest<{
     Params: {
-        userId: User['id'];
+        userId: UserInfo['userId'];
     };
-    Body: {
-        name: User['name'];
-    };
+    Body: Partial<Pick<UserInfo, 'personalColor' | 'style' | 'height' | 'weight' | 'gender' | 'birthAt'>>;
 }>, reply: FastifyReply) {
     await prisma.$transaction(async (transaction): Promise<void> => {
         const _user = await transaction.user.findFirst({
             where: {
                 id: request['params']['userId']
-            },
-            select: {
-                password: true,
-                name: true
             }
         });
 
         if (_user === null) {
             throw new BadRequest('Params["userId"] must be valid');
         }
-        
+
         if (request['params']['userId'] !== request['userId']) {
             throw new Unauthorized('Params["userId"] must be yourself');
         }
-        
-        if (_user['name'] === request['body']['name']) {
-            throw new BadRequest('Body["name"] is same previous password');
-        }
 
-        await transaction.user.update({
+        await transaction.user_info.updateMany({
             where: {
-                id: request['params']['userId']
+                user_id: request['userId']
             },
             data:  { 
-                name: request['body']['name'] 
+                personal_color: request['body']['personalColor'],
+                style: request['body']['style'],
+                height: request['body']['height'],
+                weight: request['body']['weight'],
+                gender: request['body']['gender'],
+                birth_at: new Date(request['body']['birthAt'] as unknown as string),
             }
         });
 

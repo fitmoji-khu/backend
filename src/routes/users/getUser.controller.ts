@@ -1,69 +1,52 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { prisma } from "../../lib/prisma";
-import jwt from "jsonwebtoken";
+import { User } from '../../lib/type';
+import { BadRequest, Unauthorized } from '../../lib/httpError';
 
-function verifyToken(request: FastifyRequest, reply: FastifyReply) {
-  const authHeader = request.headers.authorization;
-  if (!authHeader) {
-    reply.code(401).send({ message: "Authorization 헤더가 없습니다." });
-    return null;
-  }
-  const token = authHeader.split(" ")[1];
-  if (!token) {
-    reply.code(401).send({ message: "토큰이 없습니다." });
-    return null;
-  }
-  try {
-    return jwt.verify(token, process.env.JWT_SECRET || "your_secret_key") as {
-      userId: number;
+export default async function (request: FastifyRequest<{
+    Params: {
+        userId: User['id'];
     };
-  } catch {
-    reply.code(401).send({ message: "유효하지 않은 토큰입니다." });
-    return null;
-  }
-}
+}>, reply: FastifyReply) {
+    await prisma.$transaction(async (transaction): Promise<void> => {
+        const user = await transaction.user.findFirst({
+            where: {
+                id: request['userId'],
+                deleted_at: null
+            },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                image: true
+            }
+        });
 
-export async function getUserInfoHandler(
-  request: FastifyRequest,
-  reply: FastifyReply
-) {
-  const user = verifyToken(request, reply);
-  if (!user) return;
-  const userId = user.userId;
+        if (user === null) {
+            throw new BadRequest('Params["userId"] must be valid');
+        }
 
-  try {
-    const userInfo = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        image: true,
-        // 필요하면 더 추가 가능
-      },
+        const userInfo = await transaction.user_info.findFirst({
+            where: {
+                user_id: request['userId']
+            },
+            select: {
+                personal_color: true,
+                style: true,
+                height: true,
+                weight: true,
+                gender: true,
+                birth_at: true,
+            }
+        });
+
+        if (userInfo === null) {
+            throw new BadRequest('Params["userId"] must be valid');
+        }
+
+        reply.send({
+            user: user,
+            userInfo: userInfo
+        });
     });
-
-    if (!userInfo) {
-      return reply.code(404).send({ message: "사용자를 찾을 수 없습니다." });
-    }
-
-    const userExtraInfo = await prisma.user_info.findUnique({
-      where: { user_id: userId },
-      select: {
-        personal_color: true,
-        style: true,
-        height: true,
-        weight: true,
-        gender: true,
-        birth_at: true,
-      },
-    });
-
-    reply.send({ user: userInfo, userInfo: userExtraInfo });
-  } catch (err) {
-    reply.code(500).send({
-      message: "사용자 정보 조회 중 오류가 발생했습니다.",
-      error: err,
-    });
-  }
 }
