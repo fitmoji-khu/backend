@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model community {
+  id                Int                 @id @default(autoincrement())
+  title             String              @db.VarChar(255)
+  content           String              @db.VarChar(255)
+  photo             String?             @db.VarChar(500)
+  like_count        Int?                @default(0)
+  user_id           Int
+  created_at        DateTime?           @default(now()) @db.Timestamp(0)
+  updated_at        DateTime?           @default(now()) @db.Timestamp(0)
+  deleted_at        DateTime?           @db.Timestamp(0)
+  user              user                @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "community_user_FK")
+  community_comment community_comment[]
+
+  @@index([user_id], map: "community_user_FK")
+}
+
+model community_comment {
+  id           Int       @id @default(autoincrement())
+  content      String    @db.VarChar(255)
+  community_id Int
+  user_id      Int
+  created_at   DateTime? @default(now()) @db.Timestamp(0)
+  deleted_at   DateTime? @db.Timestamp(0)
+  community    community @relation(fields: [community_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "community_comment_community_FK")
+  user         user      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "community_comment_user_FK")
+
+  @@index([community_id], map: "community_comment_community_FK")
+  @@index([user_id], map: "community_comment_user_FK")
+}
+
+model location {
+  id         Int       @id @default(autoincrement())
+  upper_code String    @db.VarChar(255)
+  lower_code String    @db.VarChar(255)
+  nx         Int
+  ny         Int
+  weather    weather[]
+}
+
+model recommend_product {
+  product_id   Int       @id
+  user_id      Int
+  user_info_id Int
+  lprice       Int?
+  hprice       Int?
+  mall_name    String?   @db.VarChar(255)
+  brand        String?   @db.VarChar(255)
+  maker        String?   @db.VarChar(255)
+  category1    String?   @db.VarChar(100)
+  category2    String?   @db.VarChar(100)
+  category3    String?   @db.VarChar(100)
+  category4    String?   @db.VarChar(100)
+  user_item_id Int
+  user         user      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "recommend_product_user_FK")
+  user_info    user_info @relation(fields: [user_info_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "recommend_product_user_info_FK")
+  user_item    user_item @relation(fields: [user_item_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "recommend_product_user_item_FK")
+
+  @@index([user_id], map: "recommend_product_user_FK")
+  @@index([user_info_id], map: "recommend_product_user_info_FK")
+  @@index([user_item_id], map: "recommend_product_user_item_FK")
+}
+
+model user {
+  id                Int                 @id @default(autoincrement())
+  email             String              @unique(map: "user_unique") @db.VarChar(100)
+  password          String              @db.VarChar(255)
+  name              String              @unique(map: "user_unique_1") @db.VarChar(8)
+  image             String?             @db.VarChar(500)
+  created_at        DateTime            @default(now()) @db.Timestamp(0)
+  deleted_at        DateTime?           @db.Timestamp(0)
+  community         community[]
+  community_comment community_comment[]
+  recommend_product recommend_product[]
+  user_info         user_info[]
+  user_item         user_item[]
+}
+
+model user_info {
+  id                Int                 @id @default(autoincrement())
+  user_id           Int
+  personal_color    String?             @db.VarChar(50)
+  style             String?             @db.VarChar(10)
+  height            Int?
+  weight            Int?
+  gender            String?             @db.VarChar(10)
+  birth_at          DateTime?           @db.Date
+  recommend_product recommend_product[]
+  user              user                @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_info_user_FK")
+
+  @@index([user_id], map: "user_info_user_FK")
+}
+
+model user_item {
+  id                Int                 @id @default(autoincrement())
+  user_id           Int
+  upper_category    String              @db.VarChar(10)
+  lower_category    String              @db.VarChar(20)
+  color             String              @db.VarChar(10)
+  photo             String              @db.VarChar(500)
+  created_at        DateTime            @default(now()) @db.Timestamp(0)
+  updated_at        DateTime            @default(now()) @db.Timestamp(0)
+  deleted_at        DateTime?           @db.Timestamp(0)
+  recommend_product recommend_product[]
+  user              user                @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "item_user_FK")
+
+  @@index([user_id], map: "item_user_FK")
+}
+
+model weather {
+  id          Int      @id @default(autoincrement())
+  location_id Int
+  date        DateTime @db.DateTime(0)
+  tmp         Int
+  pop         Int
+  sky         Int
+  created_at  DateTime @default(now()) @db.Timestamp(0)
+  location    location @relation(fields: [location_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "weather_location_FK")
+
+  @@index([location_id], map: "weather_location_FK")
+}
