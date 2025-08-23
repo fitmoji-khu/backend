@@ -3,10 +3,10 @@ import commonSchema from "./common";
 import { User } from '../lib/type';
 
 export default {
-    id: commonSchema.id,
-    email: commonSchema.email,
+    id: commonSchema['id'],
+    email: commonSchema['email'],
     password: S.string(),
     name: S.string(),
     image: S.string()
         .maxLength(500)
-}   satisfies Record<keyof Omit<User, 'created_at' | 'deleted_at'>, JSONSchema>;
+}   satisfies Record<keyof Omit<User, 'createdAt' | 'deletedAt'>, JSONSchema>;

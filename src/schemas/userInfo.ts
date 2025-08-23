@@ -4,12 +4,12 @@ import userSchema from './user'
 import { UserInfo } from '../lib/type';
 
 export default {
-    id: commonSchema.id,
-    user_id: userSchema.id,
-    personal_color: S.string(),
+    id: commonSchema['id'],
+    userId: userSchema['id'],
+    personalColor: S.string(),
     style: S.string(),
     height: S.integer(),
     weight: S.integer(),
     gender: S.string(),
-    birth_at: commonSchema.date
+    birthAt: commonSchema['date']
 }   satisfies Record<keyof UserInfo, JSONSchema>;
