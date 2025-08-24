@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { prisma } from "../../lib/prisma";
 import { User } from '../../lib/type';
-import { BadRequest, Unauthorized } from '../../lib/httpError';
+import { BadRequest } from '../../lib/httpError';
 
 export default async function (request: FastifyRequest<{
     Params: {
