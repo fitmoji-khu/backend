@@ -127,3 +127,11 @@ model weather {
 
   @@index([location_id], map: "weather_location_FK")
 }
+
+model media {
+  id         Int       @id @default(autoincrement())
+  key        String    @db.VarChar(255)
+  type       String    @db.VarChar(255)
+  created_at DateTime  @default(now()) @db.Timestamp(0)
+  deleted_at DateTime? @db.Timestamp(0)
+}
