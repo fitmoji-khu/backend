@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 
-const ROUNDS = Number(process.env.SALT_ROUNDS ?? process.env.DEFAULT_ROUNDS);
+const ROUNDS = Number(process.env.SALT_ROUNDS);
 
 export async function hashPassword(password: string): Promise<string> {
     return bcrypt.hash(password, ROUNDS);

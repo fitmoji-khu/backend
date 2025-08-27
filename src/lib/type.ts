@@ -1,3 +1,11 @@
+export interface Media {
+    id: number;
+    key: string;
+    type: string;
+    createdAt: Date;
+    deletedAt: Date;
+}
+
 export interface User {
     id: number;
     email: string;
