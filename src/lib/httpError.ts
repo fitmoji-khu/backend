@@ -26,3 +26,9 @@ export class NotFound extends HttpError {
         super(404, message);
     }
 }
+
+export class ServerError extends HttpError {
+	constructor(message?: string) {
+		super(500, message);
+	}
+}
