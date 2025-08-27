@@ -5,8 +5,8 @@ import cors from '@fastify/cors'
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import { swaggerConfig, swaggerUiConfig } from './config/swagger';
-import fastifyMultipart from '@fastify/multipart';
 import routes from './routes/root.module'
+import multipart from '@fastify/multipart';
 
 const fastify = Fastify({
     logger: true,
@@ -25,7 +25,7 @@ fastify.register(cors, {
     allowedHeaders: ['Content-Type', 'authorization']
 });
 
-fastify.register(fastifyMultipart);
+fastify.register(multipart);
 
 fastify.register(fastifySwagger, swaggerConfig);
 fastify.register(fastifySwaggerUi, swaggerUiConfig);
