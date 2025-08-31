@@ -26,3 +26,34 @@ export interface UserInfo {
     gender: string;
     birthAt: Date;
 };
+
+export interface Closet {
+    id: number;
+    userId: number;
+    label: string;
+    accuracy: number;
+    mediaId: number;
+    createdAt: Date;
+    deletedAt: Date | null;
+}
+
+export interface Community {
+    id: number;
+    title: string;
+    content: string;
+    likeCount: number;
+    userId: number;
+    mediaId: number;
+    createdAt: Date;
+    updatedAt: Date | null;
+    deletedAt: Date | null;
+}
+
+export interface CommunityComment {
+    id: number;
+    content: string;
+    communityId: number;
+    userId: number;
+    createdAt: Date;
+    deletedAt: Date | null;
+}
