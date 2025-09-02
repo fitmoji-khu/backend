@@ -19,7 +19,6 @@ export default new Module('users', [
                 .prop('email', userSchema['email'].required())
                 .prop('password', userSchema['password'].required())
                 .prop('name', userSchema['name'].required())
-                .prop('image', userSchema['image'])             
                 .prop('personalColor', userInfoSchema['personalColor'].required())
                 .prop('style', userInfoSchema['style'].required())
                 .prop('height', userInfoSchema['height'].required())
@@ -76,12 +75,15 @@ export default new Module('users', [
         handler: patchUserController,
         schema: {
             params: S.object()
-                .prop('userId', userSchema['id']),
+                .prop('userId', userSchema['id'].required()),
             body: S.object()
-                .prop('name', userSchema['name'].required())
+                .prop('name', userSchema['name'])
+                .prop('mediaId', userSchema['mediaId'])
                 .anyOf([
                     S.object()
                         .required(['name']),
+                    S.object()
+                        .required(['mediaId'])
                 ])
         }
     }
