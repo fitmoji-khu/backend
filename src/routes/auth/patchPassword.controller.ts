@@ -12,33 +12,35 @@ export default async function (request: FastifyRequest<{
         password: User['password'];
     };
 }>, reply: FastifyReply): Promise<void> {
-    await prisma.$transaction(async (transaction): Promise<void> => {
-        const _user = await transaction.user.findFirst({
-            where: {
-                id: request['params']['userId']
+    try {
+        await prisma.$transaction(async (transaction): Promise<void> => {
+            const _user = await transaction.user.findFirst({
+                where: {
+                    id: request['params']['userId']
+                }
+            });
+
+            if (_user === null) {
+                throw new BadRequest('Params["userId"] must be valid');
             }
-        });
 
-        if (_user === null) {
-            throw new BadRequest('Params["userId"] must be valid');
-        }
-
-        if (request['params']['userId'] !== request['userId']) {
-            throw new Unauthorized('Params["userId"] must be yourself');
-        }
-
-        const hashed = await hashPassword(request['body']['password']);
-
-        await transaction.user.update({
-            where: {
-                id: request['params']['userId']
-            },
-            data:  { 
-                password: hashed
+            if (request['params']['userId'] !== request['userId']) {
+                throw new Unauthorized('Params["userId"] must be yourself');
             }
-        });
 
-        reply.status(204)
-            .send();
-    });
+            const hashed = await hashPassword(request['body']['password']);
+
+            await transaction.user.update({
+                where: {
+                    id: request['params']['userId']
+                },
+                data:  { 
+                    password: hashed
+                }
+            });
+        });
+        reply.status(204).send();
+    } catch(err) {
+        throw err;
+    }
 }

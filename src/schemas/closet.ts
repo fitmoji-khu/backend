@@ -9,5 +9,7 @@ export default {
     userId: userSchema['id'],
     label: S.string(),
     accuracy: S.number(),
+    color: S.string()
+        .maxLength(20),
     mediaId: mediaSchema['id']
 }   satisfies Record<keyof Omit<Closet, 'createdAt' | 'deletedAt'>, JSONSchema>;

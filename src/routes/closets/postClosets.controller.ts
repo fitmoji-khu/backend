@@ -4,16 +4,13 @@ import { prisma } from '../../lib/prisma';
 import { BadRequest } from '../../lib/httpError';
 
 export default async function (request: FastifyRequest<{
-    Body: Pick<Closet, 'label' | 'accuracy' | 'mediaId'>;
+    Body: Pick<Closet, 'label' | 'accuracy' | 'mediaId' | 'color'>;
 }>, reply: FastifyReply): Promise<void> {
     try {
         const closet = await prisma.$transaction(async (transaction): Promise<{ id: number }> => {
             const media = await transaction.media.findFirst({
                 where: {
                     id: request['body']['mediaId'],
-                },
-                select: {
-                    id: true
                 }
             });
             if (media === null) {
@@ -25,6 +22,7 @@ export default async function (request: FastifyRequest<{
                     user_id: request['userId'],
                     label: request['body']['label'],
                     accuracy: request['body']['accuracy'],
+                    color: request['body']['color'],
                     media_id: request['body']['mediaId']
                 },
                 select: {

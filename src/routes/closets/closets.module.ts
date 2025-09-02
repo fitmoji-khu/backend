@@ -17,12 +17,13 @@ export default new Module('closets', [
             body: S.object()
                 .prop('label', closetSchema['label'].required())
                 .prop('accuracy', closetSchema['accuracy'].required())
+                .prop('color', closetSchema['color'].required())
                 .prop('mediaId', closetSchema['mediaId'].required())
         }
     },
     {
         method: 'GET',
-        url: '',
+        url: ':userId',
         preHandler: authHandler,
         handler: getClosetsController,
     }, 
@@ -36,10 +37,13 @@ export default new Module('closets', [
                 .prop('closetId', closetSchema['id'].required()),
             body: S.object()
                 .prop('label', closetSchema['label'].required())
+                .prop('color', closetSchema['color'].required())
                 .prop('mediaId', closetSchema['mediaId'].required())
                 .anyOf([
                     S.object()
                         .required(['label']),
+                    S.object()
+                        .required(['color'])
                     S.object()
                         .required(['mediaId']) 
                 ])

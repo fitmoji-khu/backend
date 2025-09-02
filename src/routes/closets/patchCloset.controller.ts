@@ -7,7 +7,7 @@ export default async function (request: FastifyRequest<{
     Params: {
         closetId: Closet['id'];
     };
-    Body: Partial<Pick<Closet, 'label' | 'mediaId'>>;
+    Body: Partial<Pick<Closet, 'label' | 'mediaId' | 'color'>>;
 }>, reply: FastifyReply): Promise<void> {
     try {
         await prisma.$transaction(async (transaction): Promise<void> => {
@@ -45,7 +45,8 @@ export default async function (request: FastifyRequest<{
                 },
                 data: {
                     label: request['body']['label'],
-                    media_id: request['body']['mediaId']
+                    media_id: request['body']['mediaId'],
+                    color: request['body']['color']
                 }
             });
         });
