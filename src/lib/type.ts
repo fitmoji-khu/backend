@@ -11,7 +11,7 @@ export interface User {
     email: string;
     password: string;
     name: string;
-    image: string | null;
+    mediaId: number | null;
     createdAt: Date;  
     deletedAt: Date | null;
 };
@@ -32,6 +32,7 @@ export interface Closet {
     userId: number;
     label: string;
     accuracy: number;
+    color: string;
     mediaId: number;
     createdAt: Date;
     deletedAt: Date | null;
@@ -43,7 +44,7 @@ export interface Community {
     content: string;
     likeCount: number;
     userId: number;
-    mediaId: number;
+    mediaId: number | null;
     createdAt: Date;
     updatedAt: Date | null;
     deletedAt: Date | null;

@@ -1,13 +1,18 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { prisma } from '../../lib/prisma';
 import { presign } from '../../handlers/media';
+import { Closet } from '../../lib/type';
 
-export default async function (request: FastifyRequest, reply: FastifyReply): Promise<void> {
+export default async function (request: FastifyRequest<{
+    Params: {
+        userId: Closet['userId']
+    }
+}>, reply: FastifyReply): Promise<void> {
     try {
         const closets = await prisma.$transaction(async (transaction): Promise<{ id: number; label: string; accuracy: number; media: { id: number; type: string; url: string; } | null; }[]> => {
             const _closetsWithMedias = await transaction.closet.findMany({
                 where: {
-                    user_id: request['userId'],
+                    user_id: request['params']['userId'],
                     deleted_at: null
                 },
                 select: {
