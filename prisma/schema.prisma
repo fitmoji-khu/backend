@@ -60,6 +60,8 @@ model user {
   community_comment community_comment[]
   media             media?              @relation(fields: [media_id], references: [id], onDelete: Cascade, map: "user_media_FK")
   user_info         user_info[]
+  posts             CommunityPost[]
+  comments          CommunityComment[]
 
   @@index([media_id], map: "user_media_FK")
 }
@@ -79,14 +81,18 @@ model user_info {
 }
 
 model media {
-  id         Int         @id @default(autoincrement())
-  key        String      @db.VarChar(255)
-  type       String      @db.VarChar(255)
-  created_at DateTime    @default(now()) @db.Timestamp(0)
-  deleted_at DateTime?   @db.Timestamp(0)
+  id         Int                @id @default(autoincrement())
+  key        String             @db.VarChar(255)
+  type       String             @db.VarChar(255)
+  created_at DateTime           @default(now()) @db.Timestamp(0)
+  deleted_at DateTime?          @db.Timestamp(0)
   closet     closet[]
   community  community[]
   user       user[]
+  posts      CommunityPost[]
+  comments   CommunityComment[]
+
+  CommunityPostMedia CommunityPostMedia[]
 }
 
 model closet {
@@ -103,4 +109,42 @@ model closet {
 
   @@index([media_id], map: "closet_media_FK")
   @@index([user_id], map: "closet_user_FK")
+}
+
+model CommunityPost {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      user     @relation(fields: [userId], references: [id])
+  title     String
+  content   String
+  tags      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  comments CommunityComment[]
+  medias   CommunityPostMedia[]
+  media    media?               @relation(fields: [mediaId], references: [id])
+  mediaId  Int?
+}
+
+model CommunityComment {
+  id        Int           @id @default(autoincrement())
+  postId    Int
+  post      CommunityPost @relation(fields: [postId], references: [id])
+  userId    Int
+  user      user          @relation(fields: [userId], references: [id])
+  content   String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  media     media?        @relation(fields: [mediaId], references: [id])
+  mediaId   Int?
+}
+
+model CommunityPostMedia {
+  postId  Int
+  mediaId Int
+  post    CommunityPost @relation(fields: [postId], references: [id])
+  media   media         @relation(fields: [mediaId], references: [id])
+
+  @@id([postId, mediaId])
 }
