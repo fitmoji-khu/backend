@@ -55,6 +55,16 @@ export interface CommunityComment {
     content: string;
     communityId: number;
     userId: number;
+    commentId: number | null;
+    createdAt: Date;
+    deletedAt: Date | null;
+}
+
+export interface Reactions {
+    id: number;
+    emoji: string;
+    userId: number;
+    communityId: number;
     createdAt: Date;
     deletedAt: Date | null;
 }
