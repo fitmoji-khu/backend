@@ -43,7 +43,7 @@ export default new Module('closets', [
                     S.object()
                         .required(['label']),
                     S.object()
-                        .required(['color'])
+                        .required(['color']),
                     S.object()
                         .required(['mediaId']) 
                 ])
