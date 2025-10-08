@@ -31,7 +31,7 @@ model community_comment {
   content      String    @db.VarChar(255)
   community_id Int
   user_id      Int
-  created_at   DateTime @default(now()) @db.Timestamp(0)
+  created_at   DateTime? @default(now()) @db.Timestamp(0)
   deleted_at   DateTime? @db.Timestamp(0)
   comment_id   Int?
   community    community @relation(fields: [community_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "community_comment_community_FK")
@@ -93,16 +93,17 @@ model media {
 }
 
 model closet {
-  id         Int       @id @default(autoincrement())
-  user_id    Int
-  label      String    @db.VarChar(100)
-  accuracy   Float     @db.Float
-  media_id   Int
-  created_at DateTime  @default(now()) @db.Timestamp(0)
-  deleted_at DateTime? @db.Timestamp(0)
-  color      String    @db.VarChar(20)
-  media      media     @relation(fields: [media_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "closet_media_FK")
-  user       user      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "closet_user_FK")
+  id             Int       @id @default(autoincrement())
+  user_id        Int
+  media_id       Int
+  created_at     DateTime  @default(now()) @db.Timestamp(0)
+  deleted_at     DateTime? @db.Timestamp(0)
+  color          String    @db.VarChar(50)
+  upper_category String    @db.VarChar(20)
+  lower_category String    @db.VarChar(20)
+  accuracy       Float     @db.Float
+  media          media     @relation(fields: [media_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "closet_media_FK")
+  user           user      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "closet_user_FK")
 
   @@index([media_id], map: "closet_media_FK")
   @@index([user_id], map: "closet_user_FK")
