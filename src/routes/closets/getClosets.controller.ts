@@ -1,23 +1,20 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { prisma } from '../../lib/prisma';
 import { presign } from '../../handlers/media';
-import { Closet } from '../../lib/type';
 
-export default async function (request: FastifyRequest<{
-    Params: {
-        userId: Closet['userId']
-    }
-}>, reply: FastifyReply): Promise<void> {
+export default async function (request: FastifyRequest, reply: FastifyReply): Promise<void> {
     try {
-        const closets = await prisma.$transaction(async (transaction): Promise<{ id: number; label: string; accuracy: number; media: { id: number; type: string; url: string; } | null; }[]> => {
+        const closets = await prisma.$transaction(async (transaction) => {
             const _closetsWithMedias = await transaction.closet.findMany({
                 where: {
-                    user_id: request['params']['userId'],
+                    user_id: request['userId'],
                     deleted_at: null
                 },
                 select: {
                     id: true,
-                    label: true,
+                    upper_category: true,
+                    lower_category: true,
+                    color: true,
                     accuracy: true,
                     media: {
                         select: {
@@ -33,12 +30,14 @@ export default async function (request: FastifyRequest<{
             });
 
             const _closets = await Promise.all(
-                _closetsWithMedias.map(async (closet): Promise<{ id: number; label: string; accuracy: number; media: { id: number; type: string; url: string; } | null;}> => {
+                _closetsWithMedias.map(async (closet) => {
                     // if (closets.media === null) { }
                     const url = await presign(closet.media.key, 300);
                     return {
                         id: closet['id'],
-                        label: closet['label'],
+                        upperCategory: closet['upper_category'],
+                        lowerCategory: closet['lower_category'],
+                        color: closet['color'],
                         accuracy: closet['accuracy'],
                         media: {
                             id: closet['media']['id'],
@@ -47,7 +46,7 @@ export default async function (request: FastifyRequest<{
                         },
                     };
                 })
-            );
+            )
             return _closets;
         });
         reply.code(200)
