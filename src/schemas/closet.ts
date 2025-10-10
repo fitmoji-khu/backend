@@ -7,9 +7,10 @@ import mediaSchema from './media';
 export default {
     id: commonSchema['id'],
     userId: userSchema['id'],
-    label: S.string(),
+    upperCategory: S.string(),
+    lowerCategory: S.string(),
     accuracy: S.number(),
     color: S.string()
-        .maxLength(20),
+        .maxLength(50),
     mediaId: mediaSchema['id']
 }   satisfies Record<keyof Omit<Closet, 'createdAt' | 'deletedAt'>, JSONSchema>;

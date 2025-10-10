@@ -15,15 +15,12 @@ export default new Module('closets', [
         handler: postClosetsController,
         schema: {
             body: S.object()
-                .prop('label', closetSchema['label'].required())
-                .prop('accuracy', closetSchema['accuracy'].required())
-                .prop('color', closetSchema['color'].required())
                 .prop('mediaId', closetSchema['mediaId'].required())
         }
     },
     {
         method: 'GET',
-        url: ':userId',
+        url: '',
         preHandler: authHandler,
         handler: getClosetsController,
     }, 
@@ -36,12 +33,15 @@ export default new Module('closets', [
             params: S.object()
                 .prop('closetId', closetSchema['id'].required()),
             body: S.object()
-                .prop('label', closetSchema['label'].required())
-                .prop('color', closetSchema['color'].required())
-                .prop('mediaId', closetSchema['mediaId'].required())
+                .prop('upperCategory', closetSchema['upperCategory'])
+                .prop('lowerCategory', closetSchema['lowerCategory'])
+                .prop('color', closetSchema['color'])
+                .prop('mediaId', closetSchema['mediaId'])
                 .anyOf([
                     S.object()
-                        .required(['label']),
+                        .required(['upperCategory']),
+                    S.object()
+                        .required(['lowerCategory']),
                     S.object()
                         .required(['color']),
                     S.object()

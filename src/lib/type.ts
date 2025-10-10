@@ -30,7 +30,8 @@ export interface UserInfo {
 export interface Closet {
     id: number;
     userId: number;
-    label: string;
+    upperCategory: string,
+    lowerCategory: string,
     accuracy: number;
     color: string;
     mediaId: number;
@@ -67,4 +68,9 @@ export interface Reactions {
     communityId: number;
     createdAt: Date;
     deletedAt: Date | null;
+}
+
+export interface Recommendations {
+    location: string;
+    closetId: number;
 }

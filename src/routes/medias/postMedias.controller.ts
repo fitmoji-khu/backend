@@ -8,25 +8,13 @@ import { MultipartFile } from '@fastify/multipart';
 import { Upload } from '@aws-sdk/lib-storage';
 
 export default async function (request: FastifyRequest, reply: FastifyReply) {
-    const multipart = request.parts({ 
+    const filePart = await request.file({ 
         limits: { 
-            files: 1, 
             fileSize: 15 * 1024 * 1024 
         } 
-    }); 
-
-    let filePart: MultipartFile | null = null;
-
-    for await (const part of multipart) {
-        if (part.type === 'file') {
-            if (filePart !== null) {
-                throw new BadRequest('only one file allowed')
-            }
-            filePart = part; 
-        } 
-    }
-    if (filePart === null) {
-        throw new BadRequest('file must be valid');
+    })
+    if (filePart === undefined) {
+        throw new BadRequest('file is required')
     }
 
     verifyMimeType(filePart.mimetype);
@@ -41,6 +29,9 @@ export default async function (request: FastifyRequest, reply: FastifyReply) {
                 Body: filePart.file,       
                 ContentType: filePart.mimetype,
             },
+        });
+        uploader.on('httpUploadProgress', (p) => {
+            request.log.info({ p }, 's3-progress'); 
         });
 
         await uploader.done();
